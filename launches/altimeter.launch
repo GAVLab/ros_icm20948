@@ -1,0 +1,4 @@
+<launch>
+    <node name="ros_mpl3115a2" pkg="ros_mpl3115a2" type="talker.py" respawn="true" respawn_delay="2">
+    </node>
+</launch>
