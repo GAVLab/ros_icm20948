@@ -1,0 +1,4 @@
+<launch>
+    <node name="ros_icm20948" pkg="ros_icm20948" type="talker.py" respawn="true" respawn_delay="2">
+    </node>
+</launch>
