@@ -16,7 +16,7 @@ def icm20948_node():
     temp_pub = rospy.Publisher('icm20948/temp', Temperature, queue_size=10)
     status_pub = rospy.Publisher('icm20948/status', DiagnosticStatus, queue_size=10)
     rospy.init_node('icm20948')
-    rate = rospy.Rate(20) # frequency in Hz
+    rate = rospy.Rate(100) # frequency in Hz
     rospy.loginfo(rospy.get_caller_id() + "  icm20948 node launched.")
 
     IMU = qwiic_icm20948.QwiicIcm20948()
@@ -86,4 +86,4 @@ if __name__ == '__main__':
     try:
         icm20948_node()
     except rospy.ROSInterruptException:
-        rospy.loginfo(rospy.get_caller_id() + "  mpl3115a2 node exited with exception.")
+        rospy.loginfo(rospy.get_caller_id() + "  icm20948 node exited with exception.")
