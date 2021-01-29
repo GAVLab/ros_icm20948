@@ -22,6 +22,12 @@ The node communicates with the ICM20948 via i2c on the Raspberry Pi using Sparkf
 * Install wiringpi `sudo apt install wiringpi`
 * Connect i2c devices to Sparkfun Qwiic hat and run `i2cdetect -y 1` to identify channels
 * Install driver for ICM20948 IMU: `sudo pip3 install sparkfun-qwiic-icm20948`.
+* Install ahrs
+  ```
+  sudo apt-get update
+  sudo apt-get install python3-scipy
+  pip3 install ahrs
+  ```
 
 ## Running the Node
 
