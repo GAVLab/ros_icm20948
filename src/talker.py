@@ -16,7 +16,7 @@ def icm20948_node():
     temp_pub = rospy.Publisher('icm20948/temp', Temperature, queue_size=10)
     status_pub = rospy.Publisher('icm20948/status', DiagnosticStatus, queue_size=10)
     rospy.init_node('icm20948')
-    rate = rospy.Rate(1)
+    rate = rospy.Rate(100)
     rospy.loginfo(rospy.get_caller_id() + "  icm20948 node launched.")
 
     IMU = qwiic_icm20948.QwiicIcm20948()
@@ -33,48 +33,50 @@ def icm20948_node():
     IMU.begin()    
 
     while not rospy.is_shutdown():
-        raw_msg = Imu()
-        raw_msg.header.stamp = rospy.Time.now()
+        if IMU.dataReady():
+            IMU.getAgmt()
+            raw_msg = Imu()
+            raw_msg.header.stamp = rospy.Time.now()
+	            
+            raw_msg.orientation.w = 0
+            raw_msg.orientation.x = 0
+            raw_msg.orientation.y = 0
+            raw_msg.orientation.z = 0
+                
+            raw_msg.linear_acceleration.x = IMU.axRaw
+            raw_msg.linear_acceleration.y = IMU.ayRaw
+            raw_msg.linear_acceleration.z = IMU.azRaw
+                
+            raw_msg.angular_velocity.x = IMU.gxRaw
+            raw_msg.angular_velocity.y = IMU.gyRaw
+            raw_msg.angular_velocity.z = IMU.gzRaw
+                
+            raw_msg.orientation_covariance[0] = -1
+            raw_msg.linear_acceleration_covariance[0] = -1
+            raw_msg.angular_velocity_covariance[0] = -1
+                
+            raw_pub.publish(raw_msg)
+                
+            mag_msg = MagneticField()
+            mag_msg.header.stamp = rospy.Time.now()
+            mag_msg.magnetic_field.x = IMU.mxRaw
+            mag_msg.magnetic_field.y = IMU.myRaw
+            mag_msg.magnetic_field.z = IMU.mzRaw
+            mag_msg.magnetic_field_covariance[0] = -1
+            mag_pub.publish(mag_msg)
 
-        raw_msg.orientation.w = 0
-        raw_msg.orientation.x = 0
-        raw_msg.orientation.y = 0
-        raw_msg.orientation.z = 0
-
-        raw_msg.linear_acceleration.x = IMU.axRaw
-        raw_msg.linear_acceleration.y = IMU.ayRaw
-        raw_msg.linear_acceleration.z = IMU.azRaw
-
-        raw_msg.angular_velocity.x = IMU.gxRaw
-        raw_msg.angular_velocity.y = IMU.gyRaw
-        raw_msg.angular_velocity.z = IMU.gzRaw
-
-        raw_msg.orientation_covariance[0] = -1
-        raw_msg.linear_acceleration_covariance[0] = -1
-        raw_msg.angular_velocity_covariance[0] = -1
-
-        raw_pub.publish(raw_msg)
-
-        mag_msg = MagneticField()
-        mag_msg.header.stamp = rospy.Time.now()
-        mag_msg.magnetic_field.x = IMU.mxRaw
-        mag_msg.magnetic_field.y = IMU.myRaw
-        mag_msg.magnetic_field.z = IMU.mzRaw
-        mag_msg.magnetic_field_covariance[0] = -1
-        mag_pub.publish(mag_msg)
-
-        temp_msg = Temperature()
-        temp_msg.header.stamp = rospy.Time.now()
-        temp_msg.temperature = IMU.tmpRaw
-        temp_msg.variance = 0.0
-        temp_pub.publish(temp_msg)
-        
-        status_msg = DiagnosticStatus()
-        status_msg.level = 0
-        status_msg.name = "icm20948 IMU"
-        status_msg.message = ""
-        status_pub.publish(status_msg)
-
+            temp_msg = Temperature()
+            temp_msg.header.stamp = rospy.Time.now()
+            temp_msg.temperature = IMU.tmpRaw
+            temp_msg.variance = 0.0
+            temp_pub.publish(temp_msg)
+                
+            status_msg = DiagnosticStatus()
+            status_msg.level = 0
+            status_msg.name = "icm20948 IMU"
+            status_msg.message = ""
+            status_pub.publish(status_msg)
+            
         rate.sleep()   
     
     rospy.loginfo(rospy.get_caller_id() + "  icm20948 node finished")
