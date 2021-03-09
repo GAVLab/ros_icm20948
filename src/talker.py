@@ -7,7 +7,7 @@ import board
 import busio
 from sensor_msgs.msg import MagneticField,Imu
 from std_msgs.msg import Float64
-from adafruit_icm20x import ICM20948,AccelRange,GyroRange
+import qwiic_icm20948
 
 def icm20948_node():
 
@@ -15,7 +15,7 @@ def icm20948_node():
     raw_pub = rospy.Publisher('icm20948/raw', Imu, queue_size=10)
     mag_pub = rospy.Publisher('icm20948/mag', MagneticField, queue_size=10)
     rospy.init_node('icm20948')
-<<<<<<< HEAD
+
     rate = rospy.Rate(100)
     rospy.loginfo(rospy.get_caller_id() + "  icm20948 node launched.")
 
@@ -24,11 +24,6 @@ def icm20948_node():
     while IMU.connected == False:
         message = "The Qwiic ICM20948 device isn't connected to the system. Please check your connection"
         rospy.loginfo(message)
-        status_msg = DiagnosticStatus()
-        status_msg.level = 2
-        status_msg.name = "icm20948 IMU"
-        status_msg.message = message
-        status_pub.publish(status_msg)        
 
     IMU.begin()    
 
@@ -64,18 +59,6 @@ def icm20948_node():
             mag_msg.magnetic_field.z = IMU.mzRaw
             mag_msg.magnetic_field_covariance[0] = -1
             mag_pub.publish(mag_msg)
-
-            temp_msg = Temperature()
-            temp_msg.header.stamp = rospy.Time.now()
-            temp_msg.temperature = IMU.tmpRaw
-            temp_msg.variance = 0.0
-            temp_pub.publish(temp_msg)
-                
-            status_msg = DiagnosticStatus()
-            status_msg.level = 0
-            status_msg.name = "icm20948 IMU"
-            status_msg.message = ""
-            status_pub.publish(status_msg)
 
         rate.sleep()   
     
