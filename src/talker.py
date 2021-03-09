@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 
 import rospy
-from sensor_msgs.msg import Temperature,MagneticField,Imu
-from std_msgs.msg import Float64
-from diagnostic_msgs.msg import DiagnosticStatus
 import time
-import qwiic_icm20948
 import sys
+import board
+import busio
+from sensor_msgs.msg import MagneticField,Imu
+from std_msgs.msg import Float64
+from adafruit_icm20x import ICM20948,AccelRange,GyroRange
 
 def icm20948_node():
 
     # Initialize ROS node
     raw_pub = rospy.Publisher('icm20948/raw', Imu, queue_size=10)
     mag_pub = rospy.Publisher('icm20948/mag', MagneticField, queue_size=10)
-    temp_pub = rospy.Publisher('icm20948/temp', Temperature, queue_size=10)
-    status_pub = rospy.Publisher('icm20948/status', DiagnosticStatus, queue_size=10)
     rospy.init_node('icm20948')
+<<<<<<< HEAD
     rate = rospy.Rate(100)
     rospy.loginfo(rospy.get_caller_id() + "  icm20948 node launched.")
 
@@ -76,7 +76,7 @@ def icm20948_node():
             status_msg.name = "icm20948 IMU"
             status_msg.message = ""
             status_pub.publish(status_msg)
-            
+
         rate.sleep()   
     
     rospy.loginfo(rospy.get_caller_id() + "  icm20948 node finished")
@@ -85,4 +85,4 @@ if __name__ == '__main__':
     try:
         icm20948_node()
     except rospy.ROSInterruptException:
-        rospy.loginfo(rospy.get_caller_id() + "  mpl3115a2 node exited with exception.")
+        rospy.loginfo(rospy.get_caller_id() + "  icm20948 node exited with exception.")
